@@ -15,6 +15,7 @@ int main()
     signal(SIGINT, sigInterrupt);
     //char message[100];
     int k = 0;
+    int flag = 0;
     printf("Please enter the amount of nodes you would like: \n");
     scanf("%d", &k);
     printf("Spawning %d nodes...\n", k);
@@ -42,14 +43,30 @@ int main()
         { //child process
             close(fd[WRITE]); //closes childs ability to write back to papa "OH NO PAPPPPPAAAAAAAAA"
             nodeArray[i] = getpid();
-            printf("Node %d created: pid: %d\n", i, nodeArray[i]);
+            printf("Node %d created, pid: %d\n", i, nodeArray[i]);
         }
     }
     if(getpid() ==  nodeArray[k-1]) //end of the for loop
     {
         printf("All %d Nodes have been created\n", k);
+        flag = 1;
     }
-    
+
+    //TODO: Make Code into loop so that the nodes search 
+    if(getpid() == nodeArray[0] ){ //parent 
+    //TODO: Add Apple Variable and pass it on once message is created
+        int node = 0;
+        char message[50] = " ";
+        printf("Please enter what node you would like to send a message to:\n");
+        scanf("%d", &node);
+        printf("Please enter the message you would like to send:\n");
+        fflush(stdin);
+        fgets(message, sizeof(message), stdin);
+        printf("Node %d: ", node);
+        puts(message);
+    }
+
+    //TODO: Add code for children
 return 0;
 }
 void sigInterrupt (int sigNum)
