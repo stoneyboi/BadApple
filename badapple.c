@@ -15,13 +15,13 @@ int main()
     signal(SIGINT, sigInterrupt);
     //char message[100];
     int k = 0;
-    int flag = 0;
+    int nodeNum = -1;
+    char num[65];
     printf("Please enter the amount of nodes you would like: \n");
     scanf("%d", &k);
     printf("Spawning %d nodes...\n", k);
     int nodeArray[k]; // array to keep track of pids and where the apple is 
     nodeArray[0] = getpid(); //parent pid: the sender node
-    apple = nodeArray[0]; // gives apple to sender to start
     int fd[2];
     int pipeCreationResult;
     printf("Node 0 (Parent): %d\n", nodeArray[0]);
@@ -49,14 +49,13 @@ int main()
     if(getpid() ==  nodeArray[k-1]) //end of the for loop
     {
         printf("All %d Nodes have been created\n", k);
-        flag = 1;
+        apple = nodeArray[0]; // give to parent after all children have been created
     }
-
-    //TODO: Make Code into loop so that the nodes search 
-    if(getpid() == nodeArray[0] ){ //parent 
-    //TODO: Add Apple Variable and pass it on once message is created
+    while(apple >= 0){
+    if(apple == nodeArray[0] ){ //parent 
         int node = 0;
         char message[50] = " ";
+        
         printf("Please enter what node you would like to send a message to:\n");
         scanf("%d", &node);
         printf("Please enter the message you would like to send:\n");
@@ -64,9 +63,29 @@ int main()
         fgets(message, sizeof(message), stdin);
         printf("Node %d: ", node);
         puts(message);
+        sprintf(num, "%d: ", node);
+        strcat(num, message);
+        nodeNum = 1;
+        apple = nodeArray[nodeNum];
     }
-
-    //TODO: Add code for children
+    if(apple == nodeArray[nodeNum]){
+        printf("Apple is with node %d\n", nodeNum);
+        printf("Reading Message...\n");
+        char head = num[0];
+        if (atoi(&head) == nodeNum){ // if found correct node
+            printf("Correct Node found!\n");
+            printf("message: %s\n", num);
+            nodeNum = -1;
+            apple = nodeArray[0]; //send back to parent
+        }
+        else{ // if not for this node 
+            printf("Passing Message Along...\n");
+            nodeNum++;
+            apple = nodeArray[nodeNum];
+        }
+    }
+    }
+   
 return 0;
 }
 void sigInterrupt (int sigNum)
